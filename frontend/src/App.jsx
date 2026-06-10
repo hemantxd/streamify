@@ -11,9 +11,9 @@ function GuestRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="loading-screen">
-        <div className="loading-spinner" />
-        <p>Loading...</p>
+      <div className="fixed inset-0 flex flex-col items-center justify-center gap-4 z-[9999]" style={{ background: 'linear-gradient(135deg, #0a0a1a, #12122a)' }}>
+        <div className="w-10 h-10 border-[3px] border-white/10 border-t-[#667eea] rounded-full animate-spin" />
+        <p className="text-white/80 text-sm">Loading...</p>
       </div>
     );
   }
