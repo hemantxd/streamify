@@ -1,9 +1,13 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+import Layout from './components/Layout';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Onboard from './pages/Onboard';
 import Home from './pages/Home';
+import Communities from './pages/Communities';
+import CommunityMembers from './pages/CommunityMembers';
+import Friends from './pages/Friends';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function GuestRoute({ children }) {
@@ -26,34 +30,28 @@ function GuestRoute({ children }) {
   return children;
 }
 
+function AppLayout({ children }) {
+  return (
+    <Layout>
+      {children}
+    </Layout>
+  );
+}
+
 export default function App() {
   return (
     <Routes>
-      <Route
-        path="/login"
-        element={
-          <GuestRoute>
-            <Login />
-          </GuestRoute>
-        }
-      />
-      <Route
-        path="/signup"
-        element={
-          <GuestRoute>
-            <Signup />
-          </GuestRoute>
-        }
-      />
+      {/* Auth routes — no layout */}
+      <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+      <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
       <Route path="/onboard" element={<Onboard />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
-        }
-      />
+
+      {/* App routes — with Layout */}
+      <Route path="/" element={<ProtectedRoute><AppLayout><Home /></AppLayout></ProtectedRoute>} />
+      <Route path="/communities" element={<ProtectedRoute><AppLayout><Communities /></AppLayout></ProtectedRoute>} />
+      <Route path="/communities/:language" element={<ProtectedRoute><AppLayout><CommunityMembers /></AppLayout></ProtectedRoute>} />
+      <Route path="/friends" element={<ProtectedRoute><AppLayout><Friends /></AppLayout></ProtectedRoute>} />
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

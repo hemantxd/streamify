@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.route.js';
+import communityRoutes from './routes/community.route.js';
+import friendRoutes from './routes/friend.route.js';
+import notificationRoutes from './routes/notification.route.js';
 import connectDB from './lib/db.js';
 
 dotenv.config();
@@ -18,6 +21,9 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/communities", communityRoutes);
+app.use("/api/friends", friendRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.listen(PORT, () => {
   connectDB();

@@ -1,5 +1,9 @@
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import BackgroundBlobs from '../components/ui/BackgroundBlobs';
+import UserAvatar from '../components/ui/UserAvatar';
+import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -12,25 +16,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] flex items-center justify-center p-5 relative overflow-hidden">
-      {/* Background blobs */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-[#667eea] to-[#764ba2] rounded-full blur-[100px] opacity-15 -top-40 -left-20 animate-float" />
-        <div className="absolute w-[400px] h-[400px] bg-gradient-to-br from-[#f093fb] to-[#f5576c] rounded-full blur-[100px] opacity-15 -bottom-20 -right-20 animate-float-reverse" />
-        <div className="absolute w-[300px] h-[300px] bg-gradient-to-br from-[#4facfe] to-[#00f2fe] rounded-full blur-[100px] opacity-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-float-slow" />
-      </div>
+      <BackgroundBlobs variant="app" />
 
       <div className="w-full max-w-md relative z-10">
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 sm:p-10 shadow-2xl text-center animate-slide-up">
-          {/* Avatar */}
-          <div className="w-24 h-24 rounded-full mx-auto mb-5 overflow-hidden border-3 border-[#667eea] shadow-lg shadow-[#667eea]/30">
-            {user?.profilePicture ? (
-              <img src={user.profilePicture} alt={user.fullName} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-3xl font-bold text-white">
-                {user?.fullName?.charAt(0) || '?'}
-              </div>
-            )}
-          </div>
+        <Card className="p-8 sm:p-10 text-center">
+          <UserAvatar user={user} size="xl" className="mx-auto mb-5 border-3 border-[#667eea] shadow-lg shadow-[#667eea]/30" />
 
           <h1 className="text-2xl font-bold text-white mb-3">
             Welcome, {user?.fullName || 'User'}! 🎉
@@ -42,7 +32,6 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Info Grid */}
           <div className="space-y-3 mb-7 text-left">
             {[
               { label: 'Email', value: user?.email },
@@ -56,13 +45,8 @@ export default function Home() {
             ))}
           </div>
 
-          <button
-            onClick={handleLogout}
-            className="px-8 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-300 font-semibold text-sm hover:bg-red-500/20 transition-all active:scale-[0.98]"
-          >
-            Sign Out
-          </button>
-        </div>
+          <Button variant="danger" onClick={handleLogout}>Sign Out</Button>
+        </Card>
       </div>
     </div>
   );
