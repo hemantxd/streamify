@@ -2,6 +2,19 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
+function generateToken(userId) {
+  return jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: "7d" });
+}
+
+function setCookie(res, token) {
+  res.cookie("jwt", token, {
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+  });
+}
+
 export async function signup(req, res) {
   const { email, password, fullName } = req.body;
 
@@ -25,7 +38,7 @@ export async function signup(req, res) {
       return res.status(400).json({ message: "Email already exists, please use a diffrent one" });
     }
 
-    const idx = Math.floor(Math.random() * 100) + 1; // generate a num between 1-100
+    const idx = Math.floor(Math.random() * 100) + 1;
     const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
 
     const newUser = await User.create({
@@ -35,18 +48,10 @@ export async function signup(req, res) {
       profilePicture: randomAvatar,
     });
 
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "7d",
-    });
+    const token = generateToken(newUser._id);
+    setCookie(res, token);
 
-    res.cookie("jwt", token, {
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true, // prevent XSS attacks,
-      sameSite: "strict", // prevent CSRF attacks
-      secure: process.env.NODE_ENV === "production",
-    });
-
-    res.status(201).json({ success: true, user: newUser });
+    res.status(201).json({ success: true, user: newUser, token });
   } catch (error) {
     console.log("Error in signup controller", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -67,18 +72,10 @@ export async function login(req, res) {
     const isPasswordCorrect = await user.matchPassword(password);
     if (!isPasswordCorrect) return res.status(401).json({ message: "Invalid email or password" });
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "7d",
-    });
+    const token = generateToken(user._id);
+    setCookie(res, token);
 
-    res.cookie("jwt", token, {
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true, // prevent XSS attacks,
-      sameSite: "strict", // prevent CSRF attacks
-      secure: process.env.NODE_ENV === "production",
-    });
-
-    res.status(200).json({ success: true, user });
+    res.status(200).json({ success: true, user, token });
   } catch (error) {
     console.log("Error in login controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
@@ -106,15 +103,11 @@ export async function onboard(req, res) {
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      {
-        ...req.body,
-        isOnboarded: true,
-      },
+      { ...req.body, isOnboarded: true },
       { new: true }
     );
 
     if (!updatedUser) return res.status(404).json({ message: "User not found" });
-
 
     res.status(200).json({ success: true, user: updatedUser });
   } catch (error) {
@@ -139,10 +132,24 @@ export async function getMe(req, res) {
   }
 }
 
-export default {
-    login,
-    signup,
-    logout,
-    onboard,
-    getMe,
+// Returns JWT token for socket.io auth (reads from httpOnly cookie server-side)
+export async function getToken(req, res) {
+  try {
+    const token = jwt.sign({ userId: req.user._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "7d",
+    });
+    res.status(200).json({ success: true, token });
+  } catch (error) {
+    console.error("getToken error:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 }
+
+export default {
+  login,
+  signup,
+  logout,
+  onboard,
+  getMe,
+  getToken,
+};

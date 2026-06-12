@@ -21,12 +21,14 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     const { data } = await axios.post('/auth/login', { email, password });
     setUser(data.user);
+    if (data.token) localStorage.setItem('jwt_token', data.token);
     return data;
   };
 
   const signup = async (fullName, email, password) => {
     const { data } = await axios.post('/auth/signup', { fullName, email, password });
     setUser(data.user);
+    if (data.token) localStorage.setItem('jwt_token', data.token);
     return data;
   };
 
@@ -38,6 +40,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     await axios.post('/auth/logout');
+    localStorage.removeItem('jwt_token');
     setUser(null);
   };
 

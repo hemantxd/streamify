@@ -101,7 +101,6 @@ export default function Layout({ children }) {
                 )}
               </button>
 
-              {/* Notification Dropdown */}
               {showNotifs && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowNotifs(false)} />
@@ -112,31 +111,48 @@ export default function Layout({ children }) {
                         <button onClick={markAllRead} className="text-xs text-[#667eea] hover:underline">Mark all read</button>
                       )}
                     </div>
+
                     {notifications.length === 0 ? (
                       <p className="text-white/40 text-sm text-center py-6">No notifications</p>
                     ) : (
                       notifications.map((n) => (
-                        <div
-                          key={n._id}
-                          onClick={() => { if (!n.read) markRead(n._id); }}
-                          className={`flex items-start gap-3 p-3 border-b border-white/5 cursor-pointer transition-all ${
-                            n.read ? 'opacity-50' : 'bg-white/5'
-                          } hover:bg-white/10`}
-                        >
-                          <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-sm">
-                            {n.from?.profilePicture ? (
-                              <img src={n.from.profilePicture} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                              n.from?.fullName?.charAt(0) || '?'
-                            )}
+                        <div key={n._id} className="p-3 border-b border-white/5">
+                          <div
+                            onClick={() => { if (!n.read) markRead(n._id); }}
+                            className={`flex items-start gap-3 cursor-pointer transition-all ${n.read ? 'opacity-50' : ''}`}
+                          >
+                            <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-sm">
+                              {n.from?.profilePicture ? (
+                                <img src={n.from.profilePicture} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                n.from?.fullName?.charAt(0) || '?'
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm text-white/80">{n.message}</p>
+                              <p className="text-xs text-white/30 mt-0.5">
+                                {new Date(n.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
+                            {!n.read && <div className="w-2 h-2 rounded-full bg-[#667eea] shrink-0 mt-1.5" />}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm text-white/80">{n.message}</p>
-                            <p className="text-xs text-white/30 mt-0.5">
-                              {new Date(n.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                            </p>
-                          </div>
-                          {!n.read && <div className="w-2 h-2 rounded-full bg-[#667eea] shrink-0 mt-1.5" />}
+
+                          {/* "View Request" button for friend_request notifications */}
+                          {n.type === 'friend_request' && (
+                            <div className="flex gap-2 mt-2 ml-10">
+                              <button
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  await axios.put(`/notifications/${n._id}/read`);
+                                  setShowNotifs(false);
+                                  navigate('/friends?tab=requests');
+                                }}
+                                className="flex-1 py-1.5 text-xs font-medium bg-[#34d399]/15 text-[#34d399] border border-[#34d399]/30 rounded-lg hover:bg-[#34d399]/25 transition-all"
+                              >
+                                View Request
+                              </button>
+                            </div>
+                          )}
                         </div>
                       ))
                     )}
@@ -155,18 +171,12 @@ export default function Layout({ children }) {
                 )}
               </div>
               <span className="text-sm text-white/70 hidden sm:block">{user?.fullName}</span>
-              <button
-                onClick={handleLogout}
-                className="text-xs text-red-400 hover:text-red-300 ml-1 hidden sm:block"
-              >
-                Sign Out
-              </button>
+              <button onClick={handleLogout} className="text-xs text-red-400 hover:text-red-300 ml-1 hidden sm:block">Sign Out</button>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Main Content */}
       <main className="flex-1">{children}</main>
     </div>
   );

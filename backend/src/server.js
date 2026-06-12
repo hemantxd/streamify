@@ -6,7 +6,9 @@ import authRoutes from './routes/auth.route.js';
 import communityRoutes from './routes/community.route.js';
 import friendRoutes from './routes/friend.route.js';
 import notificationRoutes from './routes/notification.route.js';
+import messageRoutes from './routes/message.route.js';
 import connectDB from './lib/db.js';
+import { initializeSocket } from './lib/socket.js';
 
 dotenv.config();
 
@@ -24,8 +26,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/communities", communityRoutes);
 app.use("/api/friends", friendRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/messages", messageRoutes);
 
-app.listen(PORT, () => {
+const server = initializeSocket(app);
+
+server.listen(PORT, () => {
   connectDB();
   console.log(`Server is running on port ${PORT}`);
 });

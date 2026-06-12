@@ -12,5 +12,6 @@ router.post('/logout', authController.logout);
 
 router.post('/onboard', protect, authController.onboard);
 router.get('/me', protect, authController.getMe);
+router.get('/token', protect, authController.getToken);
 
 export default router;

@@ -56,7 +56,7 @@ export async function acceptFriendRequest(req, res) {
     const userId = req.user._id;
     const { requestId } = req.params;
 
-    const request = await FriendRequest.findById(requestId);
+    const request = await FriendRequest.findById(requestId).populate('sender', 'fullName');
     if (!request) return res.status(404).json({ message: 'Request not found' });
     if (request.receiver.toString() !== userId.toString()) {
       return res.status(403).json({ message: 'Not authorized' });
@@ -66,13 +66,15 @@ export async function acceptFriendRequest(req, res) {
     request.status = 'accepted';
     await request.save();
 
+    const senderId = request.sender._id;
+
     // Add to both friends lists
-    await User.findByIdAndUpdate(userId, { $addToSet: { friends: request.sender } });
-    await User.findByIdAndUpdate(request.sender, { $addToSet: { friends: userId } });
+    await User.findByIdAndUpdate(userId, { $addToSet: { friends: senderId } });
+    await User.findByIdAndUpdate(senderId, { $addToSet: { friends: userId } });
 
     // Notify sender
     await Notification.create({
-      user: request.sender,
+      user: senderId,
       type: 'friend_accepted',
       message: `${req.user.fullName} accepted your friend request`,
       from: userId,
@@ -84,7 +86,7 @@ export async function acceptFriendRequest(req, res) {
       user: userId,
       type: 'friend_accepted',
       message: `You are now friends with ${request.sender.fullName || 'this user'}`,
-      from: request.sender,
+      from: senderId,
       relatedId: request._id,
     });
 

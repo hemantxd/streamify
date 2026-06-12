@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import axios from '../api/axios';
 
 export default function Friends() {
-  const [tab, setTab] = useState('friends');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') === 'requests' ? 'requests' : 'friends';
+  const [tab, setTab] = useState(initialTab);
   const [friends, setFriends] = useState([]);
   const [requests, setRequests] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -91,7 +94,7 @@ export default function Friends() {
         {tabs.map((t) => (
           <button
             key={t.id}
-            onClick={() => setTab(t.id)}
+            onClick={() => { setTab(t.id); setSearchParams(t.id === 'requests' ? { tab: 'requests' } : {}); }}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-all relative ${
               tab === t.id
                 ? 'text-white bg-white/5 border-b-2 border-[#667eea]'
