@@ -59,23 +59,14 @@ export default function ChatWindow({ friend, onClose }) {
     setSending(true);
 
     try {
-      // Use REST API to send — always works regardless of socket state
-      const { data } = await axios.post('/messages', {
+      // REST API sends + broadcasts via socket.io server-side
+      await axios.post('/messages', {
         receiverId: friend._id,
         text,
       });
-
-      // Add the message locally immediately
-      setMessages((prev) => [...prev, data.message]);
-
-      // Also emit via socket for real-time delivery to receiver
-      const socket = window.__socket;
-      if (socket) {
-        socket.emit('chat:send', { receiverId: friend._id, text });
-      }
+      // Message appears in real-time via socket listener
     } catch (err) {
       console.error('Send failed:', err);
-      // Re-add the text to input on failure
       setInput(text);
     } finally {
       setSending(false);

@@ -2,6 +2,7 @@ import { Server } from 'socket.io';
 import http from 'http';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import Message from '../models/Message.js';
 
 let io;
 
@@ -35,55 +36,25 @@ export function initializeSocket(app) {
   io.on('connection', (socket) => {
     const userId = socket.user._id.toString();
 
-    // Track online users
     if (!userSocketMap.has(userId)) {
       userSocketMap.set(userId, new Set());
     }
     userSocketMap.get(userId).add(socket.id);
 
-    // Join personal room for private messages
     socket.join(userId);
-
-    // Broadcast online status
     io.emit('user:online', { userId });
 
-    // Handle joining chat with a friend
     socket.on('chat:join', ({ friendId }) => {
       const room = getChatRoom(userId, friendId);
       socket.join(room);
     });
 
-    // Handle sending message
-    socket.on('chat:send', async ({ receiverId, text }) => {
-      try {
-        const { Message } = await import('../models/Message.js');
-        const message = await Message.create({
-          sender: userId,
-          receiver: receiverId,
-          text,
-        });
-
-        const populated = await Message.findById(message._id)
-          .populate('sender', 'fullName profilePicture')
-          .populate('receiver', 'fullName profilePicture');
-
-        const room = getChatRoom(userId, receiverId);
-        io.to(room).emit('chat:message', populated);
-      } catch (err) {
-        console.error('chat:send error:', err.message);
-      }
-    });
-
-    // Handle typing indicator
     socket.on('chat:typing', ({ friendId, isTyping }) => {
-      const room = getChatRoom(userId, friendId);
-      socket.to(room).emit('chat:typing', { userId, isTyping });
+      socket.to(friendId).emit('chat:typing', { userId, isTyping });
     });
 
-    // Handle marking messages as read
     socket.on('chat:read', async ({ friendId }) => {
       try {
-        const { Message } = await import('../models/Message.js');
         await Message.updateMany(
           { sender: friendId, receiver: userId, read: false },
           { read: true }
@@ -108,6 +79,19 @@ export function initializeSocket(app) {
 
 function getChatRoom(userId1, userId2) {
   return [userId1, userId2].sort().join(':');
+}
+
+export function emitNewMessage(message) {
+  if (!io) return;
+
+  const senderId = message.sender._id?.toString() || message.sender.toString();
+  const receiverId = message.receiver._id?.toString() || message.receiver.toString();
+
+  // Emit to each user's personal room only — every user always joins their own room on connect.
+  // This avoids duplicates (shared room + personal room) and guarantees delivery
+  // even if the receiver doesn't have the chat window open.
+  io.to(senderId).emit('chat:message', message);
+  io.to(receiverId).emit('chat:message', message);
 }
 
 export function getIO() {

@@ -1,5 +1,6 @@
 import Message from '../models/Message.js';
 import User from '../models/User.js';
+import { emitNewMessage } from '../lib/socket.js';
 
 export async function sendMessage(req, res) {
   try {
@@ -19,6 +20,9 @@ export async function sendMessage(req, res) {
     const populated = await Message.findById(message._id)
       .populate('sender', 'fullName profilePicture')
       .populate('receiver', 'fullName profilePicture');
+
+    // Real-time delivery via socket.io
+    emitNewMessage(populated);
 
     res.status(201).json({ success: true, message: populated });
   } catch (error) {
