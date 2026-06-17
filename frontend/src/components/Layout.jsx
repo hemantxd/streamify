@@ -162,7 +162,7 @@ export default function Layout({ children }) {
             </div>
 
             {/* Profile */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            <Link to="/profile" className="flex items-center gap-2 sm:gap-3 hover:bg-white/5 p-1.5 rounded-lg transition-all">
               <div className="w-8 h-8 rounded-full overflow-hidden border border-white/20 bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-sm font-bold">
                 {user?.profilePicture ? (
                   <img src={user.profilePicture} alt="" className="w-full h-full object-cover" />
@@ -171,8 +171,8 @@ export default function Layout({ children }) {
                 )}
               </div>
               <span className="text-sm text-white/70 hidden sm:block">{user?.fullName}</span>
-              <button onClick={handleLogout} className="text-xs text-red-400 hover:text-red-300 ml-1 hidden sm:block">Sign Out</button>
-            </div>
+            </Link>
+            <button onClick={handleLogout} className="text-xs text-red-400 hover:text-red-300 ml-1 hidden sm:block">Sign Out</button>
           </div>
         </div>
       </nav>

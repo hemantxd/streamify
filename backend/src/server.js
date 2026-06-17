@@ -7,6 +7,7 @@ import communityRoutes from './routes/community.route.js';
 import friendRoutes from './routes/friend.route.js';
 import notificationRoutes from './routes/notification.route.js';
 import messageRoutes from './routes/message.route.js';
+import uploadRoutes from './routes/upload.route.js';
 import connectDB from './lib/db.js';
 import { initializeSocket } from './lib/socket.js';
 
@@ -27,6 +28,7 @@ app.use("/api/communities", communityRoutes);
 app.use("/api/friends", friendRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/upload", uploadRoutes);
 
 const server = initializeSocket(app);
 

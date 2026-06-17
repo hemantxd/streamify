@@ -49,6 +49,10 @@ export function initializeSocket(app) {
       socket.join(room);
     });
 
+    socket.on('community:join', ({ language }) => {
+      socket.join(`community:${language}`);
+    });
+
     socket.on('chat:typing', ({ friendId, isTyping }) => {
       socket.to(friendId).emit('chat:typing', { userId, isTyping });
     });
@@ -87,11 +91,15 @@ export function emitNewMessage(message) {
   const senderId = message.sender._id?.toString() || message.sender.toString();
   const receiverId = message.receiver._id?.toString() || message.receiver.toString();
 
-  // Emit to each user's personal room only — every user always joins their own room on connect.
-  // This avoids duplicates (shared room + personal room) and guarantees delivery
-  // even if the receiver doesn't have the chat window open.
   io.to(senderId).emit('chat:message', message);
   io.to(receiverId).emit('chat:message', message);
+}
+
+export function emitCommunityMessage(message) {
+  if (!io) return;
+
+  // Broadcast to the community room
+  io.to(`community:${message.community}`).emit('community:message', message);
 }
 
 export function getIO() {

@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
     nativeLanguage: { type: String, default: '' },
     learningLanguage: { type: String, default: '' },
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    joinedCommunities: [{ type: String }],
   },
   { timestamps: true }
 );
