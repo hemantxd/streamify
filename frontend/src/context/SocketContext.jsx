@@ -92,7 +92,8 @@ export function SocketProvider({ children }) {
       const token = await getToken();
       if (!token || !active) return;
 
-      const s = io('http://localhost:5001', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+      const s = io(API_URL, {
         auth: { token },
         transports: ['websocket', 'polling'],
       });
