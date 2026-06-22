@@ -33,7 +33,7 @@ export default function Login() {
       <BackgroundBlobs variant="auth" />
 
       <div className="flex w-full max-w-[960px] min-h-[600px] bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative z-10">
-        <AuthBrand subtitle="Welcome back! Stream your world." />
+        <AuthBrand subtitle="Welcome back! Continue your language journey." />
 
         <div className="flex-1 flex items-center justify-center p-12">
           <div className="w-full max-w-sm">

@@ -63,8 +63,8 @@ export default function Layout({ children }) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl">🎧</span>
-            <span className="text-lg font-bold bg-gradient-to-br from-[#667eea] to-[#764ba2] bg-clip-text text-transparent hidden sm:inline">Streamify</span>
+            <span className="text-xl">💬</span>
+            <span className="text-lg font-bold bg-gradient-to-br from-[#667eea] to-[#764ba2] bg-clip-text text-transparent hidden sm:inline">Fluentra</span>
           </Link>
 
           {/* Nav Links */}

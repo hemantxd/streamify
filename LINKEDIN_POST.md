@@ -1,6 +1,6 @@
-🚀 Just built & deployed Streamify — a real-time social chat platform!
+🚀 Just built & deployed Fluentra — a real-time language community chat platform!
 
-After weeks of building, I'm excited to share Streamify, a full-stack web app where users can:
+After weeks of building, I'm excited to share Fluentra, a full-stack web app where users can:
 🔹 Chat in real-time with friends via WebSockets
 🔹 Join community chat rooms by language/programming topic
 🔹 Send friend requests & manage notifications
@@ -22,7 +22,5 @@ After weeks of building, I'm excited to share Streamify, a full-stack web app wh
 - Optimistic UI updates & unread message tracking
 
 Check out the repo: https://github.com/hemantxd/streamify
-
-Would love feedback from the dev community! What features would you add next? 💭
 
 #webdev #react #nodejs #mern #socketio #fullstack #javascript #buildinpublic

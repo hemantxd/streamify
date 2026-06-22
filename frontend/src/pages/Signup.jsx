@@ -34,12 +34,12 @@ export default function Signup() {
       <BackgroundBlobs variant="auth" />
 
       <div className="flex w-full max-w-[960px] min-h-[600px] bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative z-10">
-        <AuthBrand subtitle="Join the community. Start streaming." />
+        <AuthBrand subtitle="Join the community. Find your language partner." />
 
         <div className="flex-1 flex items-center justify-center p-12">
           <div className="w-full max-w-sm">
             <h2 className="text-2xl font-bold text-white mb-1">Create Account</h2>
-            <p className="text-white/40 text-sm mb-7">Begin your streaming journey</p>
+            <p className="text-white/40 text-sm mb-7">Begin your language journey</p>
 
             {error && (
               <div className="bg-red-500/10 border border-red-500/30 text-red-300 px-4 py-2.5 rounded-lg text-sm mb-5">{error}</div>
